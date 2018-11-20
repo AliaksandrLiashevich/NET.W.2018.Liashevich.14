@@ -90,6 +90,5 @@ namespace MatrixLibrary
                 throw new ArgumentException("Indexes of insert element are not valid!");
             }
         }
-
     }
 }
