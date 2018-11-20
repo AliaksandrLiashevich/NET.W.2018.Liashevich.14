@@ -2,16 +2,29 @@
 
 namespace BinaryTreeLibrary
 {
+    /// <summary>
+    /// Class represents binary tree
+    /// </summary>
+    /// <typeparam name="T">Value or reference type</typeparam>
     public class BinaryTree<T>
     {
         private Node<T> root;
         private IComparer<T> comparer;
 
+        /// <summary>
+        /// Constructor that initialize way of comparing
+        /// </summary>
+        /// <param name="_comparer">Object that has compare method</param>
         public BinaryTree(IComparer<T> _comparer)
         {
             comparer = _comparer;
         }
 
+        /// <summary>
+        /// Method allows to find element of the tree according the key
+        /// </summary>
+        /// <param name="key">Data for searching process</param>
+        /// <returns>Reference on object(if this object exist) or null(object doesn't exist)</returns>
         public Node<T> Find(T key)
         {
             if (root == null)
@@ -22,6 +35,12 @@ namespace BinaryTreeLibrary
             return Find(root, key);
         }
 
+        /// <summary>
+        /// Method helper for Find, execute recursive search
+        /// </summary>
+        /// <param name="node">Node of the tree</param>
+        /// <param name="key">Data for searching process</param>
+        /// <returns>Reference on object(if this object exist) or null(object doesn't exist)</returns>
         private Node<T> Find(Node<T> node, T key)
         {
             if (node == null)
@@ -44,18 +63,30 @@ namespace BinaryTreeLibrary
             }
         }
 
+        /// <summary>
+        /// Method inserts data on definite position in the tree
+        /// </summary>
+        /// <param name="data">Some data for storing in the tree node</param>
         public void Insert(T data)
         {
             if (root == null)
             {
                 root = new Node<T>();
                 root.data = data;
+
+                return;
             }
 
-            Insert(root, root, data);
+            Insert(ref root, ref root, data);
         }
 
-        private void Insert(Node<T> node, Node<T> parent, T data)
+        /// <summary>
+        /// Method inserts data on definite position in the tree
+        /// </summary>
+        /// <param name="node">Current node of the tree on recursive step</param>
+        /// <param name="parent">Node parent</param>
+        /// <param name="data">Some data for storing in the tree node</param>
+        private void Insert(ref Node<T> node, ref Node<T> parent, T data)
         {
             if (node == null)
             {
@@ -63,19 +94,23 @@ namespace BinaryTreeLibrary
                 node.data = data;
                 node.parent = parent;
 
-                return;
+                return; 
             }
 
             if (comparer.Compare(data, node.data) == -1)
             {
-                Insert(node.left, node, data);
+                Insert(ref node.left, ref node, data);
             }
             else
             {
-                Insert(node.right, node, data);
+                Insert(ref node.right, ref node, data);
             }
         }
 
+        /// <summary>
+        /// Method allows to remove node with the same key as input
+        /// </summary>
+        /// <param name="key">Key of deletiong object</param>
         public void Remove(T key)
         {
             Node<T> markNode = Find(key);
@@ -111,6 +146,12 @@ namespace BinaryTreeLibrary
             }
         }
 
+        /// <summary>
+        /// Method helper for Remove, determines what child is for the parent node
+        /// </summary>
+        /// <param name="markNode"></param>
+        /// <param name="child"></param>
+        /// <param name="key"></param>
         private void Remove(Node<T> markNode, Node<T> child, T key)
         {
             if (comparer.Compare(key, markNode.parent.data) == -1)
@@ -123,32 +164,46 @@ namespace BinaryTreeLibrary
             }
         }
 
-        public IEnumerable<T> PreorderPrint(int max)
+        /// <summary>
+        /// Named iterator for Preorder bypass => (parent, left child, right child)
+        /// </summary>
+        /// <returns>Enumerator for steping throw the collection</returns>
+        public IEnumerable<T> PreorderPrint()
         {
-            List<T> nodes = new List<T>();
+            List<T> list = new List<T>();
 
-            PreorderPrint(root, nodes);
+            PreorderPrint(root, list);
 
-            foreach (T arg in nodes)
+            foreach (T arg in list)
             {
                 yield return arg;
             }
         }
 
+        /// <summary>
+        /// Method collects all elements of the tree into List
+        /// following the ruler => (parent, left child, right child)
+        /// </summary>
+        /// <param name="node">Current node of the tree</param>
+        /// <param name="nodes">List of nodes data</param>
         private void PreorderPrint(Node<T> node, List<T> nodes)
         { 
-            if (root == null)
+            if (node == null)
             {
-                return ;
+                return;
             }
 
             nodes.Add(node.data);
-
+            
             PreorderPrint(node.left, nodes);
             PreorderPrint(node.right, nodes);
         }
 
-        public IEnumerable<T> InorderPrint(int max)
+        /// <summary>
+        /// Named iterator for Preorder bypass => (left child, parent, right child)
+        /// </summary>
+        /// <returns>Enumerator for steping throw the collection</returns>
+        public IEnumerable<T> InorderPrint()
         {
             List<T> nodes = new List<T>();
 
@@ -160,9 +215,15 @@ namespace BinaryTreeLibrary
             }
         }
 
+        /// <summary>
+        /// Method collects all elements of the tree into List
+        /// following the ruler => (left child, parent, right child)
+        /// </summary>
+        /// <param name="node">Current node of the tree</param>
+        /// <param name="nodes">List of nodes data</param>
         private void InorderPrint(Node<T> node, List<T> nodes)
         {
-            if (root == null)
+            if (node == null)
             {
                 return;
             }
@@ -174,7 +235,11 @@ namespace BinaryTreeLibrary
             InorderPrint(node.right, nodes);
         }
 
-        public IEnumerable<T> PostorderPrint(int max)
+        /// <summary>
+        /// Named iterator for Preorder bypass => (left child, right child, parent)
+        /// </summary>
+        /// <returns>Enumerator for steping throw the collection</returns>
+        public IEnumerable<T> PostorderPrint()
         {
             List<T> nodes = new List<T>();
 
@@ -186,9 +251,15 @@ namespace BinaryTreeLibrary
             }
         }
 
+        /// <summary>
+        /// Method collects all elements of the tree into List
+        /// following the ruler => (left child, right child, parent
+        /// </summary>
+        /// <param name="node">Current node of the tree</param>
+        /// <param name="nodes">List of nodes data</param>
         private void PostorderPrint(Node<T> node, List<T> nodes)
         {
-            if (root == null)
+            if (node == null)
             {
                 return;
             }
@@ -200,6 +271,10 @@ namespace BinaryTreeLibrary
         }
     }
 
+    /// <summary>
+    /// Class provides using of node of the treee structure
+    /// </summary>
+    /// <typeparam name="T">Value or reference type</typeparam>
     public class Node<T>
     {
         public Node<T> left;
