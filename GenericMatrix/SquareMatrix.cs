@@ -2,6 +2,7 @@
 
 namespace MatrixLibrary
 {
+    public delegate void MatrixStateHandler(string message);
     /// <summary>
     /// Class represents a square matrix
     /// </summary>
@@ -9,6 +10,7 @@ namespace MatrixLibrary
     public class SquareMatrix<T>
     {
         protected static ISum<T> sum;
+        protected event MatrixStateHandler Modification;
 
         /// <summary>
         /// Constructor initializes matrix elements and 
@@ -18,6 +20,8 @@ namespace MatrixLibrary
         /// <param name="_sum">Way of sum matrix of class type</param>
         public SquareMatrix(T[,] _array, ISum<T> _sum)
         {
+            Modification = Listeners.MatrixModification;
+
             Validation(_array);
 
             Array = _array;
@@ -49,6 +53,17 @@ namespace MatrixLibrary
             InRange(i, j);
 
             Array[i, j] = arg;
+
+            Modified($"Cell [{i}, {j}] modified at {this.GetType().Name}");
+        }
+        
+        /// <summary>
+        /// Method calls listeners of the change event
+        /// </summary>
+        /// <param name="message">Some sembols that brings info about event</param>
+        protected void Modified(string message)
+        {
+            Modification?.Invoke(message);
         }
 
         /// <summary>
@@ -77,8 +92,4 @@ namespace MatrixLibrary
         }
 
     }
-
-   
-
-    
 }
